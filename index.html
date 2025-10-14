@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时间针脚 - 专注时间管理</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .inspiration {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        h2 {
+            color: #3498db;
+        }
+        
+        .toggle-controls {
+            background: none;
+            border: none;
+            color: #7f8c8d;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .toggle-controls i {
+            margin-right: 5px;
+        }
+        
+        .section-content {
+            transition: all 0.3s ease;
+        }
+        
+        .collapsed .section-content {
+            display: none;
+        }
+        
+        .clocks-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .clock-wrapper {
+            text-align: center;
+            margin: 15px;
+        }
+        
+        .clock-title {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        canvas {
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .current-task {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            font-weight: bold;
+            min-height: 40px;
+        }
+        
+        .control-panel {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .task-list {
+            margin-top: 20px;
+        }
+        
+        .task-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .color-option {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .stat-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .stat-title {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .stat-detail {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 15px;
+        }
+        
+        .btn-secondary {
+            background-color: #7f8c8d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #636e72;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .clocks-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .clock-wrapper {
+                margin-bottom: 30px;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>时间针脚</h1>
+        <p class="inspiration">"你用时间的针脚，缝了什么？"</p>
+    </header>
+    
+    <section class="section" id="plan-section">
+        <div class="section-header">
+            <h2>计划时间</h2>
+            <button class="toggle-controls" id="toggle-plan">
+                <i class="fa fa-chevron-up"></i> 收起控制面板
+            </button>
+        </div>
+        
+        <div class="clocks-container">
+            <div class="clock-wrapper">
+                <div class="clock-title">上午 (0AM-11:59AM)</div>
+                <canvas id="plan-clock-am" width="250" height="250"></canvas>
+                <div class="current-task" id="plan-task-am">当前任务将显示在这里</div>
+            </div>
+            
+            <div class="clock-wrapper">
+                <div class="clock-title">下午 (12noon-11:59PM)</div>
+                <canvas id="plan-clock-pm" width="250" height="250"></canvas>
+                <div class="current-task" id="plan-task-pm">当前任务将显示在这里</div>
+            </div>
+        </div>
+        
+        <div class="section-content">
+            <div class="control-panel">
+                <h3>添加计划时间段</h3>
+                <div class="form-group">
+                    <label for="plan-start">开始时间</label>
+                    <select id="plan-start">
+                        <option value="">-- 选择开始时间 --</option>
+                        <!-- 选项由JavaScript生成 -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="plan-end">结束时间</label>
+                    <select id="plan-end">
+                        <option value="">-- 选择结束时间 --</option>
+                        <!-- 选项由JavaScript生成 -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="plan-color">任务类型与颜色</label>
+                    <select id="plan-color">
+                        <option value="blue">蓝色 - 专注</option>
+                        <option value="red">红色 - 战斗</option>
+                        <option value="yellow">黄色 - 警惕</option>
+                        <option value="green">绿色 - 放松</option>
+                        <option value="purple">紫色 - 创意</option>
+                        <option value="orange">橙色 - 活力</option>
+                        <option value="beige">米白色 - 温暖</option>
+                        <option value="pink">粉红色 - 快乐</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="plan-task">任务名称 (10字以内)</label>
+                    <input type="text" id="plan-task" maxlength="10" placeholder="输入任务名称">
+                </div>
+                
+                <button id="add-plan">添加计划时间段</button>
+                
+                <div class="task-list" id="plan-tasks">
+                    <!-- 计划任务列表将由JavaScript生成 -->
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="section" id="practice-section">
+        <div class="section-header">
+            <h2>实践时间</h2>
+            <button class="toggle-controls" id="toggle-practice">
+                <i class="fa fa-chevron-up"></i> 收起控制面板
+            </button>
+        </div>
+        
+        <div class="clocks-container">
+            <div class="clock-wrapper">
+                <div class="clock-title">上午 (0AM-11:59AM)</div>
+                <canvas id="practice-clock-am" width="250" height="250"></canvas>
+                <div class="current-task" id="practice-task-am">当前任务将显示在这里</div>
+            </div>
+            
+            <div class="clock-wrapper">
+                <div class="clock-title">下午 (12noon-11:59PM)</div>
+                <canvas id="practice-clock-pm" width="250" height="250"></canvas>
+                <div class="current-task" id="practice-task-pm">当前任务将显示在这里</div>
+            </div>
+        </div>
+        
+        <div class="section-content">
+            <div class="control-panel">
+                <h3>记录实践时间段</h3>
+                <div class="form-group">
+                    <label for="practice-start">开始时间</label>
+                    <select id="practice-start">
+                        <option value="">-- 选择开始时间 --</option>
+                        <!-- 选项由JavaScript生成 -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="practice-end">结束时间</label>
+                    <select id="practice-end">
+                        <option value="">-- 选择结束时间 --</option>
+                        <!-- 选项由JavaScript生成 -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="practice-task">选择计划任务</label>
+                    <select id="practice-task">
+                        <option value="">-- 选择计划任务 --</option>
+                        <!-- 选项由JavaScript生成 -->
+                    </select>
+                </div>
+                
+                <button id="add-practice">记录实践时间段</button>
+                
+                <div class="task-list" id="practice-tasks">
+                    <!-- 实践任务列表将由JavaScript生成 -->
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="section" id="stats-section">
+        <div class="section-header">
+            <h2>时间统计</h2>
+            <button class="toggle-controls" id="toggle-stats">
+                <i class="fa fa-chevron-up"></i> 收起统计
+            </button>
+        </div>
+        
+        <div class="section-content">
+            <div class="stats-container" id="time-stats">
+                <!-- 统计卡片将由JavaScript生成 -->
+            </div>
+        </div>
+    </section>
+    
+    <div class="action-buttons">
+        <button id="reset-practice" class="btn-secondary">清除实践数据，开启新一天</button>
+        <button id="export-data">导出数据</button>
+    </div>
+    
+    <footer>
+        <p>©2025 TimeStitch 时间针脚 - 专注当下，用心生活</p>
+    </footer>
+
+    <!-- 引入Font Awesome图标 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化时间选择下拉框
+            initializeTimeSelects();
+            
+            // 初始化时钟
+            initializeClocks();
+            
+            // 加载保存的数据
+            loadSavedData();
+            
+            // 设置事件监听器
+            document.getElementById('add-plan').addEventListener('click', addPlanTimeBlock);
+            document.getElementById('add-practice').addEventListener('click', addPracticeTimeBlock);
+            document.getElementById('reset-practice').addEventListener('click', resetPracticeData);
+            document.getElementById('export-data').addEventListener('click', exportData);
+            
+            // 设置控制面板切换
+            document.getElementById('toggle-plan').addEventListener('click', function() {
+                toggleSection('plan-section');
+                updateToggleIcon(this);
+            });
+            
+            document.getElementById('toggle-practice').addEventListener('click', function() {
+                toggleSection('practice-section');
+                updateToggleIcon(this);
+            });
+            
+            document.getElementById('toggle-stats').addEventListener('click', function() {
+                toggleSection('stats-section');
+                updateToggleIcon(this);
+            });
+            
+            // 每分钟更新一次时钟和当前任务
+            setInterval(updateClocks, 60000);
+            updateClocks(); // 立即更新一次
+            
+            // 每半小时更新一次过去时间的灰色蒙层
+            setInterval(updatePastTimeOverlay, 1800000);
+            updatePastTimeOverlay(); // 立即更新一次
+            
+            // 检查是否是新的一天
+            checkForNewDay();
+        });
+        
+        // 切换部分展开/收起
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('collapsed');
+        }
+        
+        // 更新切换图标
+        function updateToggleIcon(button) {
+            const icon = button.querySelector('i');
+            if (icon.classList.contains('fa-chevron-up')) {
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                button.innerHTML = '<i class="fa fa-chevron-down"></i> 展开控制面板';
+            } else {
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                button.innerHTML = '<i class="fa fa-chevron-up"></i> 收起控制面板';
+            }
+        }
+        
+        // 初始化时间选择下拉框
+        function initializeTimeSelects() {
+            const timeSelects = [
+                'plan-start', 'plan-end', 
+                'practice-start', 'practice-end'
+            ];
+            
+            timeSelects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                // 清空现有选项（保留默认选项）
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+                
+                // 添加时间选项（每30分钟一个间隔）
+                for (let hour = 0; hour < 24; hour++) {
+                    for (let minute = 0; minute < 60; minute += 30) {
+                        const time24 = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                        let displayTime;
+                        
+                        if (hour === 0) {
+                            if(minute === 0){displayTime = "0AM";}
+                            else{displayTime = `0:${minute.toString().padStart(2, '0')} AM`;} 
+                        } else if (hour === 12 && minute === 0) {
+                            displayTime = "12 noon";
+                        } else {
+                            const period = hour >= 12 ? 'PM' : 'AM';
+                            const hour12 = hour % 12 || 12;
+                            displayTime = `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
+                        }
+                        
+                        const option = document.createElement('option');
+                        option.value = time24;
+                        option.textContent = displayTime;
+                        select.appendChild(option);
+                    }
+                }
+            });
+        }
+        
+        // 初始化时钟
+        function initializeClocks() {
+            const clockCanvases = [
+                'plan-clock-am', 'plan-clock-pm',
+                'practice-clock-am', 'practice-clock-pm'
+            ];
+            
+            clockCanvases.forEach(canvasId => {
+                const canvas = document.getElementById(canvasId);
+                const ctx = canvas.getContext('2d');
+                const radius = canvas.width / 2;
+                
+                // 绘制基础时钟
+                drawClockBase(ctx, radius);
+            });
+        }
+        
+        // 绘制基础时钟
+        function drawClockBase(ctx, radius) {
+            // 清空画布
+            ctx.clearRect(0, 0, radius * 2, radius * 2);
+            
+            // 绘制外圆
+            ctx.beginPath();
+            ctx.arc(radius, radius, radius - 5, 0, 2 * Math.PI);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 绘制刻度
+            for (let i = 0; i < 12; i++) {
+                const angle = (i * 30) * Math.PI / 180;
+                const sin = Math.sin(angle);
+                const cos = Math.cos(angle);
+                
+                // 小时刻度
+                ctx.beginPath();
+                ctx.moveTo(radius + (radius - 20) * sin, radius - (radius - 20) * cos);
+                ctx.lineTo(radius + (radius - 5) * sin, radius - (radius - 5) * cos);
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#333';
+                ctx.stroke();
+                
+                // 小时数字 - 修改0点和12点的显示
+                let hourText;
+                if (i === 0) {
+                    hourText = '12';
+                } else if (i === 12) {
+                    hourText = '12';
+                } else {
+                    hourText = i.toString();
+                }
+                
+                ctx.font = '14px Arial';
+                ctx.fillStyle = '#333';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(
+                    hourText, 
+                    radius + (radius - 35) * sin, 
+                    radius - (radius - 35) * cos
+                );
+            }
+            
+            // 绘制分钟刻度
+            for (let i = 0; i < 60; i++) {
+                if (i % 5 !== 0) { // 跳过小时刻度位置
+                    const angle = (i * 6) * Math.PI / 180;
+                    const sin = Math.sin(angle);
+                    const cos = Math.cos(angle);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(radius + (radius - 10) * sin, radius - (radius - 10) * cos);
+                    ctx.lineTo(radius + (radius - 5) * sin, radius - (radius - 5) * cos);
+                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = '#666';
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        // 添加计划时间段
+        function addPlanTimeBlock() {
+            const startTime = document.getElementById('plan-start').value;
+            const endTime = document.getElementById('plan-end').value;
+            const color = document.getElementById('plan-color').value;
+            const task = document.getElementById('plan-task').value;
+            
+            if (!startTime || !endTime || !task) {
+                alert('请完整填写开始时间、结束时间和任务名称');
+                return;
+            }
+            
+            // 检查时间顺序
+            const startMins = timeToMinutes(startTime);
+            const endMins = timeToMinutes(endTime);
+            
+            // 处理跨午夜的情况
+            let adjustedEndMins = endMins;
+            if (endMins < startMins) {
+                // 结束时间在第二天，调整为24小时后的时间
+                adjustedEndMins = endMins + 1440; // 1440分钟 = 24小时
+            }
+            
+            // 获取颜色对应的任务类型
+            const colorOptions = document.getElementById('plan-color').options;
+            const selectedOption = colorOptions[colorOptions.selectedIndex];
+            const taskType = selectedOption.text.split(' - ')[1];
+            
+            // 创建时间块对象
+            const timeBlock = {
+                start: startTime,
+                end: endTime,
+                color: color,
+                task: task,
+                type: taskType,
+                // 存储分钟数用于后续处理
+                startMins: startMins,
+                endMins: endMins,
+                adjustedEndMins: adjustedEndMins
+            };
+            
+            // 保存到本地存储
+            saveTimeBlock(timeBlock, 'plan');
+            
+            // 更新计划任务下拉框（用于实践部分）
+            updatePracticeTaskSelect();
+            
+            // 重新绘制时钟
+            drawTimeBlocks();
+            
+            // 更新统计
+            updateTimeStats();
+            
+            // 清空表单
+            document.getElementById('plan-start').value = '';
+            document.getElementById('plan-end').value = '';
+            document.getElementById('plan-task').value = '';
+        }
+        
+        // 添加实践时间段
+        function addPracticeTimeBlock() {
+            const startTime = document.getElementById('practice-start').value;
+            const endTime = document.getElementById('practice-end').value;
+            const taskValue = document.getElementById('practice-task').value;
+            
+            if (!startTime || !endTime || !taskValue) {
+                alert('请完整填写开始时间、结束时间和选择任务');
+                return;
+            }
+            
+            // 检查时间顺序
+            const startMins = timeToMinutes(startTime);
+            const endMins = timeToMinutes(endTime);
+            
+            // 处理跨午夜的情况
+            let adjustedEndMins = endMins;
+            if (endMins < startMins) {
+                // 结束时间在第二天，调整为24小时后的时间
+                adjustedEndMins = endMins + 1440; // 1440分钟 = 24小时
+            }
+            
+            let timeBlock;
+            
+            if (taskValue === 'unscheduled') {
+                // 计划外任务
+                timeBlock = {
+                    start: startTime,
+                    end: endTime,
+                    color: 'gray',
+                    task: '计划外',
+                    type: '计划外',
+                    startMins: startMins,
+                    endMins: endMins,
+                    adjustedEndMins: adjustedEndMins
+                };
+            } else {
+                // 从计划任务中获取颜色信息
+                const planTasks = JSON.parse(localStorage.getItem('planTimeBlocks') || '[]');
+                const selectedTask = planTasks.find(t => `${t.start}-${t.end}-${t.task}` === taskValue);
+                
+                if (!selectedTask) {
+                    alert('选择的计划任务不存在');
+                    return;
+                }
+                
+                // 创建时间块对象
+                timeBlock = {
+                    start: startTime,
+                    end: endTime,
+                    color: selectedTask.color,
+                    task: selectedTask.task,
+                    type: selectedTask.type,
+                    startMins: startMins,
+                    endMins: endMins,
+                    adjustedEndMins: adjustedEndMins
+                };
+            }
+            
+            // 保存到本地存储
+            saveTimeBlock(timeBlock, 'practice');
+            
+            // 重新绘制时钟
+            drawTimeBlocks();
+            
+            // 更新统计
+            updateTimeStats();
+            
+            // 清空表单
+            document.getElementById('practice-start').value = '';
+            document.getElementById('practice-end').value = '';
+            document.getElementById('practice-task').value = '';
+        }
+        
+        // 保存时间段到本地存储
+        function saveTimeBlock(timeBlock, type) {
+            const key = `${type}TimeBlocks`;
+            let timeBlocks = JSON.parse(localStorage.getItem(key) || '[]');
+            
+            // 检查是否有重叠的时间段
+            const startMins = timeBlock.startMins;
+            const endMins = timeBlock.endMins;
+            const adjustedEndMins = timeBlock.adjustedEndMins;
+            
+            for (const block of timeBlocks) {
+                const blockStart = block.startMins;
+                let blockEnd = block.endMins;
+                
+                // 处理跨午夜的情况
+                if (blockEnd < blockStart) {
+                    blockEnd = block.endMins + 1440;
+                }
+                
+                if (startMins < blockEnd && adjustedEndMins > blockStart) {
+                    if (confirm('时间段有重叠，是否继续添加？')) {
+                        break;
+                    } else {
+                        return;
+                    }
+                }
+            }
+            
+            // 移除辅助属性，只保留必要属性
+            const saveBlock = {
+                start: timeBlock.start,
+                end: timeBlock.end,
+                color: timeBlock.color,
+                task: timeBlock.task,
+                type: timeBlock.type
+            };
+            
+            timeBlocks.push(saveBlock);
+            
+            // 按照开始时间排序（从0AM开始）
+            timeBlocks.sort((a, b) => {
+                return timeToMinutes(a.start) - timeToMinutes(b.start);
+            });
+            
+            localStorage.setItem(key, JSON.stringify(timeBlocks));
+            
+            // 更新任务列表显示
+            updateTaskListDisplay(type);
+        }
+        
+        // 更新时间块显示
+        function drawTimeBlocks() {
+            const planBlocks = JSON.parse(localStorage.getItem('planTimeBlocks') || '[]');
+            const practiceBlocks = JSON.parse(localStorage.getItem('practiceTimeBlocks') || '[]');
+            
+            // 绘制计划时钟
+            drawTimeBlocksOnClock('plan-clock-am', planBlocks, 'AM');
+            drawTimeBlocksOnClock('plan-clock-pm', planBlocks, 'PM');
+            
+            // 绘制实践时钟
+            drawTimeBlocksOnClock('practice-clock-am', practiceBlocks, 'AM');
+            drawTimeBlocksOnClock('practice-clock-pm', practiceBlocks, 'PM');
+        }
+        
+        // 在指定时钟上绘制时间段 - 修复跨午夜时间段显示问题
+        function drawTimeBlocksOnClock(canvasId, timeBlocks, period) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const radius = canvas.width / 2;
+            
+            // 清除并重绘基础时钟
+            drawClockBase(ctx, radius);
+            
+            // 绘制每个时间段
+            timeBlocks.forEach(block => {
+                const startMins = timeToMinutes(block.start);
+                const endMins = timeToMinutes(block.end);
+                
+                // 处理跨午夜的情况
+                let adjustedStartMins = startMins;
+                let adjustedEndMins = endMins;
+                
+                if (endMins < startMins) {
+                    // 时间段跨越午夜
+                    if (period === 'AM') {
+                        // 上午时钟：显示从午夜到结束时间的部分
+                        adjustedStartMins = 0; // 午夜
+                        adjustedEndMins = endMins;
+                    } else {
+                        // 下午时钟：显示从开始时间到午夜的部分
+                        adjustedStartMins = startMins;
+                        adjustedEndMins = 1440; // 午夜 (24:00)
+                    }
+                } else {
+                    // 不跨午夜的时间段
+                    // 确定时间段属于上午还是下午
+                    const isAM = startMins < 720; // 720分钟 = 12:00
+                    
+                    if ((period === 'AM' && isAM) || (period === 'PM' && !isAM)) {
+                        // 时间段在当前时钟上
+                        adjustedStartMins = startMins;
+                        adjustedEndMins = endMins;
+                    } else {
+                        // 时间段不在当前时钟上，跳过
+                        return;
+                    }
+                }
+                
+                // 调整时间为当前时钟的12小时制
+                let displayStart, displayEnd;
+                
+                if (period === 'AM') {
+                    // 上午时钟：0-719分钟
+                    displayStart = Math.max(adjustedStartMins, 0);
+                    displayEnd = Math.min(adjustedEndMins, 719);
+                } else {
+                    // 下午时钟：720-1439分钟
+                    displayStart = Math.max(adjustedStartMins - 720, 0);
+                    displayEnd = Math.min(adjustedEndMins - 720, 719);
+                }
+                
+                // 检查是否在当前时钟上有显示内容
+                if (displayStart >= displayEnd) {
+                    return;
+                }
+                
+                // 转换为角度（一圈720分钟，每分钟0.5度）
+                const startAngle = (displayStart * 0.5 - 90) * Math.PI / 180;
+                const endAngle = (displayEnd * 0.5 - 90) * Math.PI / 180;
+                
+                // 绘制彩色弧段
+                drawTimeBlockArc(ctx, radius, startAngle, endAngle, block);
+                
+                // 添加任务文本（在时间段中间）
+                const midAngle = (startAngle + endAngle) / 2;
+                drawTaskText(ctx, radius, midAngle, block.task);
+            });
+            
+            // 只在当前时段的时钟上绘制当前时间点
+            const now = new Date();
+            const currentHour = now.getHours();
+            const isAM = currentHour < 12;
+            
+            if ((period === 'AM' && isAM) || (period === 'PM' && !isAM)) {
+                drawCurrentTimePoint(ctx, radius);
+            }
+        }
+        
+        // 绘制时间段弧段
+        function drawTimeBlockArc(ctx, radius, startAngle, endAngle, block) {
+            ctx.beginPath();
+            ctx.moveTo(radius, radius);
+            ctx.arc(radius, radius, radius - 10, startAngle, endAngle);
+            ctx.closePath();
+            
+            // 设置颜色
+            const colors = {
+                blue: '#3498db',
+                red: '#e74c3c',
+                yellow: '#f1c40f',
+                green: '#2ecc71',
+                purple: '#9b59b6',
+                orange: '#f39c12',
+                beige: '#f5deb3',
+                pink: '#ffb6c1',
+                gray: '#95a5a6' // 计划外任务颜色
+            };
+            
+            ctx.fillStyle = colors[block.color] || '#3498db';
+            ctx.fill();
+        }
+        
+        // 绘制任务文本
+        function drawTaskText(ctx, radius, midAngle, taskText) {
+            const textRadius = radius - 50;
+            const textX = radius + textRadius * Math.cos(midAngle);
+            const textY = radius + textRadius * Math.sin(midAngle);
+            
+            ctx.save();
+            ctx.translate(textX, textY);
+            ctx.rotate(midAngle + Math.PI / 2);
+            ctx.font = '10px Arial';
+            ctx.fillStyle = '#000';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(taskText, 0, 0);
+            ctx.restore();
+        }
+        
+        // 绘制当前时间点
+        function drawCurrentTimePoint(ctx, radius) {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            
+            // 转换为12小时制
+            hours = hours % 12 || 12;
+            
+            // 计算角度（每小时30度，每分钟0.5度）
+            const angle = (hours * 30 + minutes * 0.5 - 90) * Math.PI / 180;
+            
+            // 绘制黑点
+            ctx.beginPath();
+            ctx.arc(
+                radius + (radius - 15) * Math.cos(angle),
+                radius + (radius - 15) * Math.sin(angle),
+                5, 0, 2 * Math.PI
+            );
+            ctx.fillStyle = 'black';
+            ctx.fill();
+        }
+        
+        // 更新时钟显示（当前时间和任务）
+        function updateClocks() {
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            // 更新计划时钟的当前任务
+            updateCurrentTask('plan', currentMinutes, 'AM', 'plan-task-am');
+            updateCurrentTask('plan', currentMinutes, 'PM', 'plan-task-pm');
+            
+            // 更新实践时钟的当前任务
+            updateCurrentTask('practice', currentMinutes, 'AM', 'practice-task-am');
+            updateCurrentTask('practice', currentMinutes, 'PM', 'practice-task-pm');
+            
+            // 重绘时钟（更新当前时间点位置）
+            drawTimeBlocks();
+        }
+        
+        // 更新当前任务显示 - 修复跨午夜时间段判断
+        function updateCurrentTask(type, currentMinutes, period, elementId) {
+            const timeBlocks = JSON.parse(localStorage.getItem(`${type}TimeBlocks`) || '[]');
+            const element = document.getElementById(elementId);
+            
+            // 查找当前时间段
+            let currentTask = null;
+            for (const block of timeBlocks) {
+                const startMins = timeToMinutes(block.start);
+                const endMins = timeToMinutes(block.end);
+                
+                // 处理跨午夜的情况
+                if (endMins < startMins) {
+                    // 时间段跨越午夜
+                    if (currentMinutes >= startMins || currentMinutes < endMins) {
+                        currentTask = block;
+                        break;
+                    }
+                } else {
+                    // 不跨午夜的时间段
+                    if (currentMinutes >= startMins && currentMinutes < endMins) {
+                        currentTask = block;
+                        break;
+                    }
+                }
+            }
+            
+            // 更新显示
+            if (currentTask) {
+                const colors = {
+                    blue: '#3498db',
+                    red: '#e74c3c',
+                    yellow: '#f1c40f',
+                    green: '#2ecc71',
+                    purple: '#9b59b6',
+                    orange: '#f39c12',
+                    beige: '#f5deb3',
+                    pink: '#ffb6c1',
+                    gray: '#95a5a6' // 计划外任务颜色
+                };
+                
+                element.innerHTML = `
+                    <span class="color-option" style="background-color: ${colors[currentTask.color]}"></span>
+                    ${currentTask.task} (${currentTask.type})
+                `;
+            } else {
+                element.textContent = '当前无计划任务';
+            }
+        }
+        
+        // 更新过去时间的灰色蒙层
+        function updatePastTimeOverlay() {
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            // 为所有时钟添加蒙层
+            addOverlayToClock('plan-clock-am', currentMinutes, 'AM');
+            addOverlayToClock('plan-clock-pm', currentMinutes, 'PM');
+            addOverlayToClock('practice-clock-am', currentMinutes, 'AM');
+            addOverlayToClock('practice-clock-pm', currentMinutes, 'PM');
+        }
+        
+        // 为时钟添加过去时间蒙层
+        function addOverlayToClock(canvasId, currentMinutes, period) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const radius = canvas.width / 2;
+            
+            // 计算当前时间在12小时制下的分钟数
+            let currentMinutes12;
+            if (period === 'AM') {
+                currentMinutes12 = Math.min(currentMinutes, 719); // 719分钟 = 11:59AM
+            } else {
+                currentMinutes12 = Math.max(currentMinutes - 720, 0);
+            }
+            
+            // 绘制灰色半透明蒙层（覆盖过去的时间）
+            ctx.beginPath();
+            ctx.moveTo(radius, radius);
+            ctx.arc(radius, radius, radius - 10, -0.5 * Math.PI, (currentMinutes12 * 0.5 - 90) * Math.PI / 180);
+            ctx.closePath();
+            
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.fill();
+        }
+        
+        // 更新计划任务下拉框（用于实践部分）
+        function updatePracticeTaskSelect() {
+            const select = document.getElementById('practice-task');
+            const planTasks = JSON.parse(localStorage.getItem('planTimeBlocks') || '[]');
+            
+            // 清空现有选项（保留默认选项）
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            // 添加计划任务选项（按时间排序）
+            planTasks.forEach(task => {
+                const option = document.createElement('option');
+                option.value = `${task.start}-${task.end}-${task.task}`;
+                option.textContent = `${formatTimeForDisplay(task.start)}-${formatTimeForDisplay(task.end)} ${task.task} (${task.type})`;
+                select.appendChild(option);
+            });
+            
+            // 添加计划外选项
+            const unscheduledOption = document.createElement('option');
+            unscheduledOption.value = 'unscheduled';
+            unscheduledOption.textContent = '计划外';
+            select.appendChild(unscheduledOption);
+        }
+        
+        // 更新任务列表显示
+        function updateTaskListDisplay(type) {
+            const elementId = `${type}TimeBlocks`;
+            const timeBlocks = JSON.parse(localStorage.getItem(elementId) || '[]');
+            const element = document.getElementById(`${type}-tasks`);
+            
+            // 清空现有内容
+            element.innerHTML = '';
+            
+            // 添加任务项
+            timeBlocks.forEach(block => {
+                const taskItem = document.createElement('div');
+                taskItem.className = 'task-item';
+                
+                const colors = {
+                    blue: '#3498db',
+                    red: '#e74c3c',
+                    yellow: '#f1c40f',
+                    green: '#2ecc71',
+                    purple: '#9b59b6',
+                    orange: '#f39c12',
+                    beige: '#f5deb3',
+                    pink: '#ffb6c1',
+                    gray: '#95a5a6' // 计划外任务颜色
+                };
+                
+                taskItem.style.backgroundColor = colors[block.color];
+                taskItem.innerHTML = `
+                    <span>${formatTimeForDisplay(block.start)}-${formatTimeForDisplay(block.end)} ${block.task} (${block.type})</span>
+                `;
+                
+                // 添加删除按钮
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '删除';
+                deleteBtn.style.padding = '5px 10px';
+                deleteBtn.style.fontSize = '12px';
+                deleteBtn.onclick = function() {
+                    deleteTimeBlock(block, type);
+                };
+                
+                taskItem.appendChild(deleteBtn);
+                element.appendChild(taskItem);
+            });
+        }
+        
+        // 更新时间统计
+        function updateTimeStats() {
+            const statsContainer = document.getElementById('time-stats');
+            statsContainer.innerHTML = '';
+            
+            const planBlocks = JSON.parse(localStorage.getItem('planTimeBlocks') || '[]');
+            const practiceBlocks = JSON.parse(localStorage.getItem('practiceTimeBlocks') || '[]');
+            
+            const colors = {
+                blue: '#3498db',
+                red: '#e74c3c',
+                yellow: '#f1c40f',
+                green: '#2ecc71',
+                purple: '#9b59b6',
+                orange: '#f39c12',
+                beige: '#f5deb3',
+                pink: '#ffb6c1',
+                gray: '#95a5a6' // 计划外任务颜色
+            };
+            
+            const colorNames = {
+                blue: '专注',
+                red: '战斗',
+                yellow: '警惕',
+                green: '放松',
+                purple: '创意',
+                orange: '活力',
+                beige: '温暖',
+                pink: '快乐',
+                gray: '计划外'
+            };
+            
+            // 计算每种颜色的计划时间
+            const planStats = {};
+            planBlocks.forEach(block => {
+                const startMins = timeToMinutes(block.start);
+                let endMins = timeToMinutes(block.end);
+                
+                // 处理跨午夜的情况
+                if (endMins < startMins) {
+                    endMins += 1440; // 24小时
+                }
+                
+                const duration = endMins - startMins;
+                if (!planStats[block.color]) {
+                    planStats[block.color] = 0;
+                }
+                planStats[block.color] += duration;
+            });
+            
+            // 计算每种颜色的实践时间
+            const practiceStats = {};
+            practiceBlocks.forEach(block => {
+                const startMins = timeToMinutes(block.start);
+                let endMins = timeToMinutes(block.end);
+                
+                // 处理跨午夜的情况
+                if (endMins < startMins) {
+                    endMins += 1440; // 24小时
+                }
+                
+                const duration = endMins - startMins;
+                if (!practiceStats[block.color]) {
+                    practiceStats[block.color] = 0;
+                }
+                practiceStats[block.color] += duration;
+            });
+            
+            // 创建统计卡片
+            Object.keys(colors).forEach(color => {
+                const planMinutes = planStats[color] || 0;
+                const practiceMinutes = practiceStats[color] || 0;
+                
+                // 只显示有数据或计划外任务的统计
+                if (planMinutes > 0 || (color === 'gray' && practiceMinutes > 0)) {
+                    const statCard = document.createElement('div');
+                    statCard.className = 'stat-card';
+                    
+                    statCard.innerHTML = `
+                        <div class="stat-header">
+                            <div class="stat-color" style="background-color: ${colors[color]}"></div>
+                            <div class="stat-title">${colorNames[color]}时间</div>
+                        </div>
+                        <div class="stat-value">${Math.round(practiceMinutes / 60 * 10) / 10}小时</div>
+                        <div class="stat-detail">
+                            ${color !== 'gray' ? `计划: ${Math.round(planMinutes / 60 * 10) / 10}小时 | 
+                            完成率: ${planMinutes > 0 ? Math.round((practiceMinutes / planMinutes) * 100) : 0}%` : '计划外活动'}
+                        </div>
+                    `;
+                    
+                    statsContainer.appendChild(statCard);
+                }
+            });
+            
+            // 添加总计卡片
+            const totalPlanMinutes = Object.values(planStats).reduce((sum, minutes) => sum + minutes, 0);
+            const totalPracticeMinutes = Object.values(practiceStats).reduce((sum, minutes) => sum + minutes, 0);
+            
+            const totalCard = document.createElement('div');
+            totalCard.className = 'stat-card';
+            totalCard.innerHTML = `
+                <div class="stat-header">
+                    <div class="stat-title">总计</div>
+                </div>
+                <div class="stat-value">${Math.round(totalPracticeMinutes / 60 * 10) / 10}小时</div>
+                <div class="stat-detail">
+                    ${totalPlanMinutes > 0 ? `计划: ${Math.round(totalPlanMinutes / 60 * 10) / 10}小时 | 
+                    完成率: ${Math.round((totalPracticeMinutes / totalPlanMinutes) * 100)}%` : '今日无计划'}
+                </div>
+            `;
+            
+            statsContainer.appendChild(totalCard);
+        }
+        
+        // 删除时间段
+        function deleteTimeBlock(blockToDelete, type) {
+            let timeBlocks = JSON.parse(localStorage.getItem(`${type}TimeBlocks`) || '[]');
+            timeBlocks = timeBlocks.filter(block => 
+                block.start !== blockToDelete.start || 
+                block.end !== blockToDelete.end || 
+                block.task !== blockToDelete.task
+            );
+            
+            localStorage.setItem(`${type}TimeBlocks`, JSON.stringify(timeBlocks));
+            
+            // 更新显示
+            updateTaskListDisplay(type);
+            drawTimeBlocks();
+            updateTimeStats();
+            
+            if (type === 'plan') {
+                updatePracticeTaskSelect();
+            }
+        }
+        
+        // 清除实践数据
+        function resetPracticeData() {
+            if (confirm('确定要清除所有实践数据吗？这将开始新的一天记录。')) {
+                localStorage.removeItem('practiceTimeBlocks');
+                localStorage.setItem('lastResetDate', new Date().toDateString());
+                
+                // 更新显示
+                updateTaskListDisplay('practice');
+                drawTimeBlocks();
+                updateTimeStats();
+                
+                alert('实践数据已清除，开始新的一天！');
+            }
+        }
+        
+        // 检查是否是新的一天
+        function checkForNewDay() {
+            const lastResetDate = localStorage.getItem('lastResetDate');
+            const today = new Date().toDateString();
+            
+            if (lastResetDate !== today) {
+                // 是新的一天，清除实践数据
+                localStorage.removeItem('practiceTimeBlocks');
+                localStorage.setItem('lastResetDate', today);
+                
+                // 更新显示
+                updateTaskListDisplay('practice');
+                drawTimeBlocks();
+                updateTimeStats();
+            }
+        }
+        
+        // 导出数据
+        function exportData() {
+            const planBlocks = JSON.parse(localStorage.getItem('planTimeBlocks') || '[]');
+            const practiceBlocks = JSON.parse(localStorage.getItem('practiceTimeBlocks') || '[]');
+            
+            const data = {
+                planTimeBlocks: planBlocks,
+                practiceTimeBlocks: practiceBlocks,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `时间针脚数据_${new Date().toLocaleDateString()}.json`;
+            link.click();
+        }
+        
+        // 加载保存的数据
+        function loadSavedData() {
+            // 更新任务列表显示
+            updateTaskListDisplay('plan');
+            updateTaskListDisplay('practice');
+            
+            // 更新计划任务下拉框
+            updatePracticeTaskSelect();
+            
+            // 绘制时间块
+            drawTimeBlocks();
+            
+            // 更新时间统计
+            updateTimeStats();
+        }
+        
+        // 工具函数：将时间字符串转换为分钟数
+        function timeToMinutes(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+        
+        // 工具函数：格式化时间显示（24小时制转12小时制）
+        function formatTimeForDisplay(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            
+            if (hours === 0 && minutes === 0) {
+                return "0AM";
+            } else if (hours === 12 && minutes === 0) {
+                return "12 noon";
+            } else {
+                const period = hours >= 12 ? 'PM' : 'AM';
+                const hours12 = hours % 12 || 12;
+                return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+            }
+        }
+    </script>
+</body>
+</html>
