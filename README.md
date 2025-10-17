@@ -35,6 +35,9 @@
 
 时间针脚使用四个表盘展示你的一天：使用示例
 
+<img width="920" height="879" alt="image" src="https://github.com/user-attachments/assets/b060f235-b78a-444f-90a0-332fbb5ac6f0" />
+
+
 <img width="921" height="831" alt="image" src="https://github.com/user-attachments/assets/61c91ced-bb32-4024-926c-3d9f61d6cc51" />
 
 
